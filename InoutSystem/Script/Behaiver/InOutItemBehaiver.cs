@@ -16,9 +16,12 @@ namespace FlowSystem
         public string defultAutoExport;
         public InputField.OnChangeEvent autoExportEvent;
         public List<Interact> interact;
-        public List<NodeItemBehaiver> nodeItems = new List<NodeItemBehaiver>();
 
-        public Transform Trans { get { return transform; } }
+        private List<INodeItem> nodeItems = new List<INodeItem>();
+        public Transform Trans {
+            get { return transform;
+            }
+        }
 
         public string Name
         {
@@ -28,7 +31,7 @@ namespace FlowSystem
             }
         }
 
-        public List<NodeItemBehaiver> ChildNodes
+        public List<INodeItem> ChildNodes
         {
             get
             {
@@ -43,9 +46,15 @@ namespace FlowSystem
 
         private void RegisterNodes()
         {
-            for (int i = 0; i < nodeItems.Count; i++)
+            INodeItem nodeItem;
+            foreach (Transform item in transform)
             {
-                nodeItems[i].Body = this;
+                nodeItem = item.GetComponent<INodeItem>();
+                if (nodeItem != null)
+                {
+                    nodeItem.Body = this;
+                    nodeItems.Add(nodeItem);
+                }
             }
         }
 

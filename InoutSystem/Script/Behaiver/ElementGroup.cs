@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace FlowSystem
 {
     /// <summary>
-    /// 负责元素的组合操作
+    /// 负责元素拾起，连接，高亮等功能的组合
     /// </summary>
     public class ElementGroup : MonoBehaviour
     {
@@ -71,10 +71,10 @@ namespace FlowSystem
             }
             else if (Input.GetMouseButtonDown(0))
             {
-                PickUpAble pickUpAble;
+                IPickUpAble pickUpAble;
                 if (pickCtrl.TryPickUpObject(out pickUpAble))
                 {
-                    List<INodeItem> oldItems = nodeConnectCtrl.PickUpInOutItem(pickUpAble.GetComponent<InOutItemBehaiver>());
+                    List<INodeItem> oldItems = nodeConnectCtrl.PickUpInOutItem(pickUpAble.Trans.GetComponent<InOutItemBehaiver>());
                     for (int i = 0; i < oldItems.Count; i++)
                     {
                         highLightCtrl.UnHighLightTarget(oldItems[i].Render);

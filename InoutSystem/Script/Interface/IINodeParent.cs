@@ -7,7 +7,7 @@ namespace FlowSystem
     {
         string Name { get; }
         Transform Trans { get; }
-        List<NodeItemBehaiver> ChildNodes { get; }
+        List<INodeItem> ChildNodes { get; }
         void ResetBodyTransform(INodeParent otherParent, Vector3 rPos, Quaternion rRot);
     }
 }

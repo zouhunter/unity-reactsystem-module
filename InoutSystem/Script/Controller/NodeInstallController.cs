@@ -10,8 +10,8 @@ namespace FlowSystem
     public class NodeConnectController : INodeConnectController
     {
         private INodeParent pickedUpItem;
-        private NodeItemBehaiver activeNode;
-        private NodeItemBehaiver targetNode;
+        private INodeItem activeNode;
+        private INodeItem targetNode;
 
         private TimeSpanInfo timeSpan;
 
@@ -24,14 +24,14 @@ namespace FlowSystem
                 return pickedUpItem;
             }
         }
-        public NodeItemBehaiver ActiveNode
+        public INodeItem ActiveNode
         {
             get
             {
                 return activeNode;
             }
         }
-        public NodeItemBehaiver TargetNode
+        public INodeItem TargetNode
         {
             get
             {
@@ -126,7 +126,7 @@ namespace FlowSystem
         {
             if (pickedUpItem != null)
             {
-                NodeItemBehaiver tempNode;
+                INodeItem tempNode;
                 foreach (var item in pickedUpItem.ChildNodes)
                 {
                     if (FindInstallableNode(item, out tempNode))
@@ -142,9 +142,9 @@ namespace FlowSystem
             return false;
         }
 
-        private bool FindInstallableNode(NodeItemBehaiver item, out NodeItemBehaiver node)
+        private bool FindInstallableNode(INodeItem item, out INodeItem node)
         {
-            Collider[] colliders = Physics.OverlapSphere(item.transform.position, sphereRange, LayerMask.GetMask(LayerConst.nodeLayer));
+            Collider[] colliders = Physics.OverlapSphere(item.Pos, sphereRange, LayerMask.GetMask(LayerConst.nodeLayer));
             if (colliders != null && colliders.Length > 0)
             {
                 foreach (var collider in colliders)

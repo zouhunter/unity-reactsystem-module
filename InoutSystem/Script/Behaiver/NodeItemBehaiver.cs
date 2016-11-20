@@ -27,6 +27,14 @@ namespace FlowSystem
                 return render;
             }
         }
+        public Vector3 Pos
+        {
+            get
+            {
+                return transform.position;
+            }
+        }
+
         [SerializeField]
         private NodeInfo nodeInfo;
         [SerializeField, Array]

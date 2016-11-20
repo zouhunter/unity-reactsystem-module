@@ -10,7 +10,7 @@ namespace FlowSystem
     /// <summary>
     /// 可操作对象具体行为实现
     /// </summary>
-    public class PickUpAble : MonoBehaviour
+    public class PickUpAble : MonoBehaviour,IPickUpAble
     {
         public UnityEvent onPickUp;
         public UnityEvent onPickDown;
@@ -18,6 +18,12 @@ namespace FlowSystem
 
         private Vector3 pickUpPos;
         private Quaternion pickUpRotation;
+
+        public Transform Trans {
+            get {
+                return transform;
+            }
+        }
 
         public void OnPickUp()
         {

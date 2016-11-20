@@ -11,6 +11,7 @@ namespace FlowSystem
     /// </summary>
     public interface INodeItem
     {
+        Vector3 Pos { get; }
         INodeParent Body { get; set; }
         Renderer Render { get; }
         NodeInfo Info { get; }

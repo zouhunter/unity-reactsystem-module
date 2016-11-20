@@ -6,8 +6,8 @@ namespace FlowSystem
     internal interface INodeConnectController
     {
         INodeParent SelectedItem { get; }
-        NodeItemBehaiver ActiveNode { get; }
-        NodeItemBehaiver TargetNode { get; }
+        INodeItem ActiveNode { get; }
+        INodeItem TargetNode { get; }
 
         List<INodeItem> PickUpInOutItem(INodeParent item);
         void PutDownInOutItem(bool connected);

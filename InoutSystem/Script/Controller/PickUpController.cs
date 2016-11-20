@@ -10,7 +10,7 @@ namespace FlowSystem
     public class PickUpController : IPickUpController
     {
         private bool pickUped;
-        private PickUpAble pickedUpObj;
+        private IPickUpAble pickedUpObj;
         private Ray ray;
         private RaycastHit hit;
         private RaycastHit shortHit;
@@ -33,7 +33,7 @@ namespace FlowSystem
             return true;
         }
 
-        private bool PickUpObject(PickUpAble pickedUpObj)
+        private bool PickUpObject(IPickUpAble pickedUpObj)
         {
             this.pickedUpObj = pickedUpObj;
             pickedUpObj.OnPickUp();
@@ -41,12 +41,12 @@ namespace FlowSystem
             return true;
         }
 
-        public bool TryPickUpObject(out PickUpAble obj)
+        public bool TryPickUpObject(out IPickUpAble obj)
         {
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask(LayerConst.itemLayer)))
             {
-                pickedUpObj = hit.collider.GetComponent<PickUpAble>();
+                pickedUpObj = hit.collider.GetComponent<IPickUpAble>();
                 if (pickedUpObj != null)
                 {
                     PickUpObject(pickedUpObj);
@@ -75,15 +75,15 @@ namespace FlowSystem
                     ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     if (Physics.Raycast(ray,out shortHit,distence, LayerMask.GetMask(LayerConst.putLayer)))
                     {
-                        pickedUpObj.transform.position = shortHit.point;
+                        pickedUpObj.Trans.position = shortHit.point;
                     }
                     else
                     {
-                        pickedUpObj.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,Input.mousePosition.y,distence));
+                        pickedUpObj.Trans.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,Input.mousePosition.y,distence));
                     }
                 }
             }
-            pickedUpObj.transform.rotation = pickedUpObj.transform.rotation * Quaternion.Euler(Vector3.up * Input.GetAxis("Mouse ScrollWheel") * scrollSpeed);
+            pickedUpObj.Trans.rotation = pickedUpObj.Trans.rotation * Quaternion.Euler(Vector3.up * Input.GetAxis("Mouse ScrollWheel") * scrollSpeed);
         }
     }
 }
