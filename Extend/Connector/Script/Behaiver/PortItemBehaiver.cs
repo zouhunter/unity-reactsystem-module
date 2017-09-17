@@ -26,7 +26,7 @@ namespace Connector
                 return transform.position;
             }
         }
-        public int NodeID { get; private set; }
+        public int NodeID { get { return _nodeId; } }
         public List<ConnectAble> connectAble
         {
             get
@@ -35,12 +35,11 @@ namespace Connector
             }
         }
         #endregion
-
+        public int _nodeId;
         public List<ConnectAble> _connectAble;
 
         void Awake()
         {
-            NodeID = transform.GetSiblingIndex();
             gameObject.layer = LayerConst.nodeLayer;
         }
 
