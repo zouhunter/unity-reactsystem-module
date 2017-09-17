@@ -3,11 +3,11 @@
 using System.Collections.Generic;
 namespace Connector
 {
-    public interface INodeParent
+    public interface IPortParent
     {
         string Name { get; }
         Transform Trans { get; }
-        List<INodeItem> ChildNodes { get; }
-        void ResetBodyTransform(INodeParent otherParent, Vector3 rPos, Vector3 rdDir);
+        List<IPortItem> ChildNodes { get; }
+        void ResetBodyTransform(IPortParent otherParent, Vector3 rPos, Vector3 rdDir);
     }
 }

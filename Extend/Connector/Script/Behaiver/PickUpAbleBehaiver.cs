@@ -10,7 +10,7 @@ namespace Connector
     /// <summary>
     /// 可操作对象具体行为实现
     /// </summary>
-    public class PickUpAble : MonoBehaviour,IPickUpAble
+    public class PickUpAbleBehaiver : MonoBehaviour,IPickUpAble
     {
         public UnityEvent onPickUp;
         public UnityEvent onPickDown;

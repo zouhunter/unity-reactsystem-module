@@ -8,19 +8,19 @@ namespace Connector
 {
     public class NodeConnectController : INodeConnectController
     {
-        public event UnityAction<INodeItem[]> onConnected;
-        public event UnityAction<INodeItem> onMatch;
-        public event UnityAction<INodeItem> onDisMatch;
-        public event UnityAction<INodeItem[]> onDisconnected;
-        public Dictionary<INodeParent, List<INodeItem>> ConnectedDic { get { return connectedNodes; } }
+        public event UnityAction<IPortItem[]> onConnected;
+        public event UnityAction<IPortItem> onMatch;
+        public event UnityAction<IPortItem> onDisMatch;
+        public event UnityAction<IPortItem[]> onDisconnected;
+        public Dictionary<IPortParent, List<IPortItem>> ConnectedDic { get { return connectedNodes; } }
 
         private float timeSpan;
         private float spanTime;
         private float sphereRange = 0.0001f;
-        private INodeParent pickedUpItem;
-        private INodeItem activeNode;
-        private INodeItem targetNode;
-        private Dictionary<INodeParent, List<INodeItem>> connectedNodes = new Dictionary<INodeParent, List<INodeItem>>();
+        private IPortParent pickedUpItem;
+        private IPortItem activeNode;
+        private IPortItem targetNode;
+        private Dictionary<IPortParent, List<IPortItem>> connectedNodes = new Dictionary<IPortParent, List<IPortItem>>();
         public NodeConnectController(float sphereRange, float spanTime)
         {
             this.spanTime = spanTime;
@@ -53,7 +53,7 @@ namespace Connector
         {
             if (pickedUpItem != null)
             {
-                INodeItem tempNode;
+                IPortItem tempNode;
                 foreach (var item in pickedUpItem.ChildNodes)
                 {
                     if (FindInstallableNode(item, out tempNode))
@@ -69,14 +69,14 @@ namespace Connector
             return false;
         }
 
-        private bool FindInstallableNode(INodeItem item, out INodeItem node)
+        private bool FindInstallableNode(IPortItem item, out IPortItem node)
         {
             Collider[] colliders = Physics.OverlapSphere(item.Pos, sphereRange, 1 << LayerConst.nodeLayer);
             if (colliders != null && colliders.Length > 0)
             {
                 foreach (var collider in colliders)
                 {
-                    INodeItem tempNode = collider.GetComponent<INodeItem>();
+                    IPortItem tempNode = collider.GetComponent<IPortItem>();
                     //主被动动连接点，非自身点，相同名，没有建立连接
                     if (tempNode.Body != item.Body && tempNode.ConnectedNode == null)
                     {
@@ -92,19 +92,19 @@ namespace Connector
             return false;
         }
 
-        public void SetActiveItem(INodeParent item)
+        public void SetActiveItem(IPortParent item)
         {
             this.pickedUpItem = item;
-            List<INodeItem> olditems = new List<INodeItem>();
+            List<IPortItem> olditems = new List<IPortItem>();
             if (connectedNodes.ContainsKey(item))
             {
-                List<INodeItem> needClear = new List<INodeItem>();
+                List<IPortItem> needClear = new List<IPortItem>();
                 for (int i = 0; i < connectedNodes[item].Count; i++)
                 {
-                    INodeItem nodeItem = connectedNodes[item][i];
+                    IPortItem nodeItem = connectedNodes[item][i];
                     needClear.Add(nodeItem);
 
-                    INodeItem target = nodeItem.ConnectedNode;
+                    IPortItem target = nodeItem.ConnectedNode;
                     connectedNodes[target.Body].Remove(target);
                     Debug.Log(connectedNodes[item][i].Detach());
 
@@ -120,7 +120,7 @@ namespace Connector
             }
         }
 
-        public void SetDisableItem(INodeParent item)
+        public void SetDisableItem(IPortParent item)
         {
             pickedUpItem = null;
             targetNode = null;
@@ -137,19 +137,19 @@ namespace Connector
 
                     if (!connectedNodes.ContainsKey(pickedUpItem))
                     {
-                        connectedNodes[pickedUpItem] = new List<INodeItem>();
+                        connectedNodes[pickedUpItem] = new List<IPortItem>();
                     }
 
                     connectedNodes[pickedUpItem].Add(activeNode);
 
                     if (!connectedNodes.ContainsKey(targetNode.Body))
                     {
-                        connectedNodes[targetNode.Body] = new List<INodeItem>();
+                        connectedNodes[targetNode.Body] = new List<IPortItem>();
                     }
 
                     connectedNodes[targetNode.Body].Add(targetNode);
 
-                    if (onConnected != null) onConnected.Invoke(new INodeItem[] { activeNode, targetNode });
+                    if (onConnected != null) onConnected.Invoke(new IPortItem[] { activeNode, targetNode });
                 }
             }
         }

@@ -14,7 +14,7 @@ namespace ReactSystem
     /// </summary>
     public class ReactSystemBehaiver : MonoBehaviour
     {
-        public ExperimentDataObject experimentData;
+        public ReactGroupObj experimentData;
 
         public Button startBtn;
         public Button interactBtn;
@@ -40,18 +40,18 @@ namespace ReactSystem
         {
             groupParent.Update();
         }
-        Dictionary<IInOutItem, int> GetConnectedDic(IInOutItem item, int exportID)
+        Dictionary<IContainer, int> GetConnectedDic(IContainer item, int exportID)
         {
-            var dic = new Dictionary<IInOutItem, int>();
-            var nodeParent = item.Go.GetComponent<INodeParent>();
-            List<INodeItem> nodeItems = null;
+            var dic = new Dictionary<IContainer, int>();
+            var nodeParent = item.Go.GetComponent<IPortParent>();
+            List<IPortItem> nodeItems = null;
             if (groupParent.ConnectedDic.TryGetValue(nodeParent, out nodeItems))
             {
                 var nodeItem = nodeItems.Find(x => x.NodeID == exportID);
                 if (nodeItem != null)
                 {
                     var connectedItem = nodeItem.ConnectedNode.Body;
-                    var body = connectedItem.Trans.GetComponent<IInOutItem>();
+                    var body = connectedItem.Trans.GetComponent<IContainer>();
                     var id = nodeItem.ConnectedNode.NodeID;
                     dic[body] = id;
 

@@ -25,14 +25,14 @@ namespace Connector
 
     public class ConnectConfigWindow : EditorWindow
     {
-        private NodeItemBehaiver node_A;
-        private NodeItemBehaiver node_B;
-        private NodeParentBehaiver item_A;
-        private NodeParentBehaiver item_B;
+        private PortItemBehaiver node_A;
+        private PortItemBehaiver node_B;
+        private PortParentBehaiver item_A;
+        private PortParentBehaiver item_B;
 
         GameObject selected = null;
 
-        [MenuItem("Window/ConnectConfig")]
+        [MenuItem("Window/Connector/Connect")]
         static void OpenConnectConfigWindow()
         {
             EditorWindow window = GetWindow<ConnectConfigWindow>("连接配制", true);
@@ -98,9 +98,9 @@ namespace Connector
         void TryConnect()
         {
             //itemA = EditorGUILayout.ObjectField("元素A", itemA, typeof(ElementItemBehaiver), true) as ElementItemBehaiver;
-            node_A = EditorGUILayout.ObjectField("A子节点", node_A, typeof(NodeItemBehaiver), true) as NodeItemBehaiver;
+            node_A = EditorGUILayout.ObjectField("A子节点", node_A, typeof(PortItemBehaiver), true) as PortItemBehaiver;
             //itemB = EditorGUILayout.ObjectField("元素B", itemB, typeof(ElementItemBehaiver), true) as ElementItemBehaiver;
-            node_B = EditorGUILayout.ObjectField("B子节点", node_B, typeof(NodeItemBehaiver), true) as NodeItemBehaiver;
+            node_B = EditorGUILayout.ObjectField("B子节点", node_B, typeof(PortItemBehaiver), true) as PortItemBehaiver;
 
             if (node_A != null)
             {
@@ -140,14 +140,14 @@ namespace Connector
             }
         }
 
-        NodeParentBehaiver FindInoutItem(NodeItemBehaiver node)
+        PortParentBehaiver FindInoutItem(PortItemBehaiver node)
         {
             Transform parent = node.transform.parent;
-            while (parent.GetComponent<NodeParentBehaiver>() == null)
+            while (parent.GetComponent<PortParentBehaiver>() == null)
             {
                 parent = parent.parent;
             }
-            return parent.GetComponent<NodeParentBehaiver>();
+            return parent.GetComponent<PortParentBehaiver>();
         }
 
         void CreateConnect()

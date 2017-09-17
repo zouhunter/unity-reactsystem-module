@@ -21,7 +21,7 @@ namespace Connector
         [Range(3, 15)]
         public float distence = 1f;
 
-        public Dictionary<INodeParent, List<INodeItem>> ConnectedDic { get { return nodeConnectCtrl.ConnectedDic; } }
+        public Dictionary<IPortParent, List<IPortItem>> ConnectedDic { get { return nodeConnectCtrl.ConnectedDic; } }
 
         public GameObjectEvent onConnect;
         public GameObjectEvent onDisConnect;
@@ -54,33 +54,33 @@ namespace Connector
             if (nodeConnectCtrl != null) nodeConnectCtrl.Update();
         }
 
-        void OnMatch(INodeItem item)
+        void OnMatch(IPortItem item)
         {
             onMatch.Invoke(item.Render);
         }
-        void OnDisMath(INodeItem item)
+        void OnDisMath(IPortItem item)
         {
             onDisMatch.Invoke(item.Render);
         }
         void OnPickUp(GameObject obj)
         {
-            nodeConnectCtrl.SetActiveItem(obj.GetComponent<INodeParent>());
+            nodeConnectCtrl.SetActiveItem(obj.GetComponent<IPortParent>());
             onPickUp.Invoke(obj);
         }
 
         void OnPickDown(GameObject obj)
         {
-            nodeConnectCtrl.SetDisableItem(obj.GetComponent<INodeParent>());
+            nodeConnectCtrl.SetDisableItem(obj.GetComponent<IPortParent>());
             onPickDown.Invoke(obj);
         }
-        void OnConnected(INodeItem[] nodes)
+        void OnConnected(IPortItem[] nodes)
         {
             foreach (var item in nodes)
             {
                 onConnect.Invoke(item.Render);
             }
         }
-        void OnDisConnected(INodeItem[] nodes)
+        void OnDisConnected(IPortItem[] nodes)
         {
             foreach (var item in nodes)
             {

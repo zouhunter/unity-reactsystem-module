@@ -8,11 +8,11 @@ using System.Collections.Generic;
 namespace Connector
 {
     [ExecuteInEditMode]
-    public class NodeItemBehaiver : MonoBehaviour, INodeItem
+    public class PortItemBehaiver : MonoBehaviour, IPortItem
     {
         #region Propertys
-        public INodeParent Body { get; set; }
-        public INodeItem ConnectedNode { get; set; }
+        public IPortParent Body { get; set; }
+        public IPortItem ConnectedNode { get; set; }
         public GameObject Render {
             get
             {
@@ -44,7 +44,7 @@ namespace Connector
             gameObject.layer = LayerConst.nodeLayer;
         }
 
-        public bool Attach(INodeItem item)
+        public bool Attach(IPortItem item)
         {
             item.ConnectedNode = this;
             ConnectedNode = item;
@@ -64,9 +64,9 @@ namespace Connector
         }
 
 
-        public INodeItem Detach()
+        public IPortItem Detach()
         {
-            INodeItem outItem = ConnectedNode;
+            IPortItem outItem = ConnectedNode;
             if (ConnectedNode != null)
             {
                 ConnectedNode.ConnectedNode = null;

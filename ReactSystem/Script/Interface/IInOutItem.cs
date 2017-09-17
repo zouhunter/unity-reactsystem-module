@@ -9,11 +9,11 @@ using System.Collections.Generic;
 /// </summary>
 namespace ReactSystem
 {
-    public interface IInOutItem
+    public interface IContainer
     {
         GameObject Go { get; }
-        event UnityAction<IInOutItem> onComplete;
-        event Func<IInOutItem,int, string[],bool> onExport;//发生反应事件
+        event UnityAction<IContainer> onComplete;
+        event Func<IContainer,int, string[],bool> onExport;//发生反应事件
         void Active(bool force = false);
         void Import(int nodeID, string[] type);//反应物进入,返回是否会反应
     }

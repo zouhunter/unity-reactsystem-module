@@ -12,23 +12,23 @@ namespace ReactSystem
     /// </summary>
     public class ReactSystemCtrl : IFlowSystemCtrl
     {
-        public IInOutItem ActiveItem
+        public IContainer ActiveItem
         {
             get
             {
                 return activeItem;
             }
         }
-        public Func<IInOutItem,int, Dictionary<IInOutItem, int>> GetConnectedDic;
+        public Func<IContainer,int, Dictionary<IContainer, int>> GetConnectedDic;
 
         private List<RunTimeElemet> elements;
-        readonly List<IInOutItem> loadedItems = new List<IInOutItem>();
-        private IInOutItem activeItem;
-        private Queue<Tuple<IInOutItem, int, string[]>> reactTuple = new Queue<Tuple<IInOutItem, int, string[]>>();
+        readonly List<IContainer> loadedItems = new List<IContainer>();
+        private IContainer activeItem;
+        private Queue<Tuple<IContainer, int, string[]>> reactTuple = new Queue<Tuple<IContainer, int, string[]>>();
         private bool isReact;
 
         public event UnityAction onComplete;
-        public event UnityAction<IInOutItem> onStepBreak;
+        public event UnityAction<IContainer> onStepBreak;
 
         public void InitExperiment(List<RunTimeElemet> elements)
         {
@@ -40,13 +40,13 @@ namespace ReactSystem
             ResatToBeginState();
 
             GameObject item;
-            IInOutItem inoutItem;
+            IContainer inoutItem;
             for (int i = 0; i < elements.Count; i++)
             {
                 RunTimeElemet element = elements[i];
                 item = GameObject.Instantiate(element.element, element.position, element.rotation) as GameObject;
                 item.name = element.name;
-                inoutItem = item.GetComponent<IInOutItem>();
+                inoutItem = item.GetComponent<IContainer>();
                 inoutItem.onExport += OnReact;
                 inoutItem.onComplete += OnOneStep;
                 loadedItems.Add(inoutItem);
@@ -70,7 +70,7 @@ namespace ReactSystem
 
             while (reactTuple.Count > 0)
             {
-                Tuple<IInOutItem, int, string[]> item = reactTuple.Dequeue();
+                Tuple<IContainer, int, string[]> item = reactTuple.Dequeue();
                 activeItem = item.Element1;
                 var outInfo = GetConnectedDic(activeItem,item.Element2);
 
@@ -102,13 +102,13 @@ namespace ReactSystem
             loadedItems.Clear();
         }
 
-        private bool OnReact(IInOutItem item, int id, string[] type)
+        private bool OnReact(IContainer item, int id, string[] type)
         {
-            reactTuple.Enqueue(new Tuple<IInOutItem, int, string[]>(item, id, type));
+            reactTuple.Enqueue(new Tuple<IContainer, int, string[]>(item, id, type));
             var outInfo = GetConnectedDic(item, id);
             return outInfo != null && outInfo.Count != 0;
         }
-        private void OnOneStep(IInOutItem item)
+        private void OnOneStep(IContainer item)
         {
             isReact = false;
             if (reactTuple.Count == 0)

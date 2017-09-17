@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 namespace ReactSystem
 {
-    public class InOutItemBehaiver : MonoBehaviour, IInOutItem
+    public class ContainerBehaiver : MonoBehaviour, IContainer
     {
         public TextAsset inportText;
         public TextAsset outportText;
@@ -21,8 +21,8 @@ namespace ReactSystem
                 return gameObject;
             }
         }
-        public event Func<IInOutItem, int, string[], bool> onExport;
-        public event UnityAction<IInOutItem> onComplete;
+        public event Func<IContainer, int, string[], bool> onExport;
+        public event UnityAction<IContainer> onComplete;
 
         private List<Port> inPorts = new List<Port>();
         private List<Port> outPorts = new List<Port>();

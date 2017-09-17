@@ -9,17 +9,17 @@ namespace Connector
     /// <summary>
     /// 处理节点的连接和断开
     /// </summary>
-    public interface INodeItem
+    public interface IPortItem
     {
         int NodeID { get; }
         List<ConnectAble> connectAble { get; }
         Vector3 Pos { get; }
-        INodeParent Body { get; set; }
+        IPortParent Body { get; set; }
         GameObject Render { get; }
-        INodeItem ConnectedNode { get; set; }
+        IPortItem ConnectedNode { get; set; }
         void ResetTransform();
-        bool Attach(INodeItem item);
-        INodeItem Detach();
+        bool Attach(IPortItem item);
+        IPortItem Detach();
         
     }
 }

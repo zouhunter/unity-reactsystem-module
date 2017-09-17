@@ -7,10 +7,10 @@ using System.Collections.Generic;
 
 namespace Connector
 {
-    public class NodeParentBehaiver : MonoBehaviour, INodeParent
+    public class PortParentBehaiver : MonoBehaviour, IPortParent
     {
-        private List<INodeItem> _childNodes = new List<INodeItem>();
-        public List<INodeItem> ChildNodes
+        private List<IPortItem> _childNodes = new List<IPortItem>();
+        public List<IPortItem> ChildNodes
         {
             get
             {
@@ -32,7 +32,7 @@ namespace Connector
             }
         }
 
-        public void ResetBodyTransform(INodeParent otherParent, Vector3 rPos, Vector3 rdDir)
+        public void ResetBodyTransform(IPortParent otherParent, Vector3 rPos, Vector3 rdDir)
         {
             transform.position = otherParent.Trans.TransformPoint(rPos);
             transform.forward = otherParent.Trans.TransformDirection(rdDir);
@@ -40,7 +40,7 @@ namespace Connector
 
         private void Awake()
         {
-            var nodeItems = GetComponentsInChildren<INodeItem>(true);
+            var nodeItems = GetComponentsInChildren<IPortItem>(true);
             _childNodes.AddRange(nodeItems);
             gameObject.layer = LayerConst.elementLayer;
 
