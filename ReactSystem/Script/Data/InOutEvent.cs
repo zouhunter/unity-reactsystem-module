@@ -44,9 +44,19 @@ namespace ReactSystem
         //完成的(忽略反应过的)
         private List<Equation> completedEquations = new List<Equation>();
         private bool inRact;
-        public InteractPool(List<Equation> equations)
+        public InteractPool(List<Equation> equations,bool autoReact)
         {
             this.equations = equations;
+            if(autoReact)
+            {
+                foreach (var item in equations)
+                {
+                    foreach (var ele in item.intypes)
+                    {
+                        AddElements(ele);
+                    }
+                }
+            }
         }
 
         public IEnumerator LunchInteractPool()

@@ -22,6 +22,7 @@ namespace ReactSystem
             }
         }
         public event Func<IContainer, int, string[], bool> onExport;
+        public event Func<IContainer, List<string>> onGetSupports;
         public event UnityAction<IContainer> onComplete;
 
         private List<Port> inPorts = new List<Port>();
@@ -32,7 +33,7 @@ namespace ReactSystem
         private void Start()
         {
             LoadConfigData();
-            interactPool = new InteractPool(equations);
+            interactPool = new InteractPool(equations, inPorts.Count == 0);
             interactPool.onNewElementGenerat = OnGenerateNewItem;
             interactPool.onAllEquationComplete = OnAllEquationComplete;
         }
@@ -93,9 +94,21 @@ namespace ReactSystem
             //防止重复启动
             if (coroutine != null) return;
             //如果有不需要反应物或条件的则启动反应器
-            if (force || equations.Find(x => x.conditions.Length == 0 && x.intypes.Length == 0) != null)
+            if (force || inPorts.Count == 0)
             {
                 coroutine = StartCoroutine(interactPool.LunchInteractPool());
+
+                var list = onGetSupports.Invoke(this);
+                if (list != null)
+                {
+                    foreach (var item in list)
+                    {
+                        //添加条件
+                        Debug.Log("AddCondintion:" + item);
+                        interactPool.AddConditions(item);
+                    }
+                }
+
             }
         }
 
@@ -140,7 +153,6 @@ namespace ReactSystem
                 }
             }
         }
-
         /// <summary>
         /// 试图将生成的元素导出
         /// </summary>

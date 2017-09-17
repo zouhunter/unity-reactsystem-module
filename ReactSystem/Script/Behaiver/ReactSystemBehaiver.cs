@@ -8,7 +8,6 @@ using ReactSystem;
 using Connector;
 namespace ReactSystem
 {
-
     /// <summary>
     /// 负责实验的初始化，加载元素，重置元素
     /// </summary>
@@ -20,7 +19,7 @@ namespace ReactSystem
         public Button interactBtn;
         public Button nextBtn;
 
-        private ReactSystemCtrl _systemCtrl;
+        private IReactSystemCtrl _systemCtrl;
         public ConnectorCtrl groupParent;
         void Start()
         {
@@ -30,6 +29,7 @@ namespace ReactSystem
 
             _systemCtrl = new ReactSystemCtrl();
             _systemCtrl.GetConnectedDic = GetConnectedDic;
+            _systemCtrl.GetSupportList = GetSupportList;
             _systemCtrl.InitExperiment(experimentData.elements);
             _systemCtrl.onComplete += () => { Debug.Log("Complete"); };
             _systemCtrl.onStepBreak += (x) => { Debug.Log("StepBreak" + x.Go.name); };
@@ -40,6 +40,28 @@ namespace ReactSystem
         {
             groupParent.Update();
         }
+
+        List<ISupporter> GetSupportList(IContainer item)
+        {
+            var list = new List<ISupporter>();
+            var nodeParent = item.Go.GetComponent<IPortParent>();
+            List<IPortItem> nodeItems = null;
+            if (groupParent.ConnectedDic.TryGetValue(nodeParent, out nodeItems))
+            {
+                foreach (var nodeItem in nodeItems)
+                {
+                    var connectedItem = nodeItem.ConnectedNode.Body;
+                    var supporter = connectedItem.Trans.GetComponent<ISupporter>();
+                    if (supporter != null)
+                    {
+                        list.Add(supporter);
+                    }
+                }
+
+            }
+            return list;
+        }
+
         Dictionary<IContainer, int> GetConnectedDic(IContainer item, int exportID)
         {
             var dic = new Dictionary<IContainer, int>();
@@ -51,10 +73,13 @@ namespace ReactSystem
                 if (nodeItem != null)
                 {
                     var connectedItem = nodeItem.ConnectedNode.Body;
-                    var body = connectedItem.Trans.GetComponent<IContainer>();
-                    var id = nodeItem.ConnectedNode.NodeID;
-                    dic[body] = id;
-
+                    var container = connectedItem.Trans.GetComponent<IContainer>();
+                    var supporter = connectedItem.Trans.GetComponent<ISupporter>();
+                    if (container != null)
+                    {
+                        var id = nodeItem.ConnectedNode.NodeID;
+                        dic[container] = id;
+                    }
                 }
             }
             return dic;

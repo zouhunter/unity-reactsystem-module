@@ -10,7 +10,7 @@ namespace ReactSystem
     /// <summary>
     /// 流动反应，并触发事件
     /// </summary>
-    public class ReactSystemCtrl : IFlowSystemCtrl
+    public class ReactSystemCtrl : IReactSystemCtrl
     {
         public IContainer ActiveItem
         {
@@ -19,10 +19,9 @@ namespace ReactSystem
                 return activeItem;
             }
         }
-        public Func<IContainer,int, Dictionary<IContainer, int>> GetConnectedDic;
-
+        public Func<IContainer, int, Dictionary<IContainer, int>> GetConnectedDic { get; set; }
+        public Func<IContainer, List<ISupporter>> GetSupportList { get; set; }
         private List<RunTimeElemet> elements;
-        readonly List<IContainer> loadedItems = new List<IContainer>();
         private IContainer activeItem;
         private Queue<Tuple<IContainer, int, string[]>> reactTuple = new Queue<Tuple<IContainer, int, string[]>>();
         private bool isReact;
@@ -30,6 +29,8 @@ namespace ReactSystem
         public event UnityAction onComplete;
         public event UnityAction<IContainer> onStepBreak;
 
+        readonly List<IContainer> containers = new List<IContainer>();
+        readonly List<ISupporter> supporters = new List<ISupporter>();
         public void InitExperiment(List<RunTimeElemet> elements)
         {
             this.elements = elements;
@@ -40,16 +41,30 @@ namespace ReactSystem
             ResatToBeginState();
 
             GameObject item;
-            IContainer inoutItem;
+            IActiveAble inoutItem;
             for (int i = 0; i < elements.Count; i++)
             {
                 RunTimeElemet element = elements[i];
                 item = GameObject.Instantiate(element.element, element.position, element.rotation) as GameObject;
                 item.name = element.name;
-                inoutItem = item.GetComponent<IContainer>();
-                inoutItem.onExport += OnReact;
-                inoutItem.onComplete += OnOneStep;
-                loadedItems.Add(inoutItem);
+
+                inoutItem = item.GetComponent<IActiveAble>();
+                if (inoutItem != null)
+                {
+                    if (inoutItem is IContainer)
+                    {
+                        var container = inoutItem as IContainer;
+                        container.onExport += OnReact;
+                        container.onComplete += OnOneStep;
+                        container.onGetSupports += GetSupporter;
+                        containers.Add(container);
+                    }
+                    else if(inoutItem is ISupporter)
+                    {
+                        supporters.Add(inoutItem as ISupporter);
+                    }
+                }
+
             }
         }
 
@@ -57,7 +72,11 @@ namespace ReactSystem
         {
             if (elements == null) return false;
             if (GetConnectedDic == null) return false;
-            foreach (var item in loadedItems)
+            foreach (var item in supporters)
+            {
+                item.Active();
+            }
+            foreach (var item in containers)
             {
                 item.Active();
             }
@@ -72,14 +91,14 @@ namespace ReactSystem
             {
                 Tuple<IContainer, int, string[]> item = reactTuple.Dequeue();
                 activeItem = item.Element1;
-                var outInfo = GetConnectedDic(activeItem,item.Element2);
+                var outInfo = GetConnectedDic(activeItem, item.Element2);
 
                 if (outInfo != null && outInfo.Count != 0)
                 {
                     foreach (var node in outInfo)
                     {
                         var outInoutItem = node.Key;
-                        var outInoutId= node.Value;
+                        var outInoutId = node.Value;
                         outInoutItem.Import(outInoutId, item.Element3);
                     }
                 }
@@ -91,15 +110,35 @@ namespace ReactSystem
                 isReact = true;
             }
         }
-
+        private List<string> GetSupporter(IContainer container)
+        {
+            var list = new List<string>();
+            var supporters = GetSupportList(container);
+            foreach (var item in supporters)
+            {
+                item.Active(true);
+                var supp = item.GetSupport();
+                if (supp != null)
+                {
+                    list.AddRange(supp);
+                }
+            }
+            return list;
+        }
         private void ResatToBeginState()
         {
             reactTuple.Clear();
             activeItem = null;
-            foreach (var item in loadedItems){
+            foreach (var item in containers)
+            {
                 GameObject.Destroy(item.Go);
             }
-            loadedItems.Clear();
+            foreach (var item in supporters)
+            {
+                GameObject.Destroy(item.Go);
+            }
+            containers.Clear();
+            supporters.Clear();
         }
 
         private bool OnReact(IContainer item, int id, string[] type)
