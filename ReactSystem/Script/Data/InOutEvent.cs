@@ -44,10 +44,10 @@ namespace ReactSystem
         //完成的(忽略反应过的)
         private List<Equation> completedEquations = new List<Equation>();
         private bool inRact;
-        public InteractPool(List<Equation> equations,bool autoReact)
+        public InteractPool(List<Equation> equations, bool autoReact)
         {
             this.equations = equations;
-            if(autoReact)
+            if (autoReact)
             {
                 foreach (var item in equations)
                 {
@@ -62,6 +62,7 @@ namespace ReactSystem
         public IEnumerator LunchInteractPool()
         {
             TryActiveEquation();
+
             while (completedEquations.Count < equations.Count)
             {
                 yield return new WaitForEndOfFrame();
@@ -79,9 +80,10 @@ namespace ReactSystem
                             Debug.Log("生成" + ele);
                         }
                     }
-                    if(!completedEquations.Contains(equation)) completedEquations.Add(equation);
+                    if (!completedEquations.Contains(equation)) completedEquations.Add(equation);
                 }
             }
+
             if (onAllEquationComplete != null) onAllEquationComplete.Invoke();
         }
         public void AddElements(string element)

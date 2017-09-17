@@ -33,9 +33,13 @@ namespace ReactSystem
         private void Start()
         {
             LoadConfigData();
-            interactPool = new InteractPool(equations, inPorts.Count == 0);
-            interactPool.onNewElementGenerat = OnGenerateNewItem;
-            interactPool.onAllEquationComplete = OnAllEquationComplete;
+            if(equations.Count > 0)
+            {
+                interactPool = new InteractPool(equations, inPorts.Count == 0);
+                interactPool.onNewElementGenerat = OnGenerateNewItem;
+                interactPool.onAllEquationComplete = OnAllEquationComplete;
+            }
+           
         }
 
         /// <summary>
@@ -75,7 +79,7 @@ namespace ReactSystem
                 for (int i = 1; i < grid.Length; i++)
                 {
                     Equation row = new Equation();
-                    if(!string.IsNullOrEmpty(grid[i][0])) row.intypes = grid[i][0].Split('|');
+                    if (!string.IsNullOrEmpty(grid[i][0])) row.intypes = grid[i][0].Split('|');
                     if (!string.IsNullOrEmpty(grid[i][1])) row.outtypes = grid[i][1].Split('|');
                     row.interactTime = float.Parse(grid[i][2]);
                     if (!string.IsNullOrEmpty(grid[i][3])) row.conditions = grid[i][3].Split('|');
@@ -83,7 +87,7 @@ namespace ReactSystem
                     equations.Add(row);
                 }
             }
-           
+
         }
         /// <summary>
         /// 开始的时候选择性启动,达到优化
@@ -94,7 +98,7 @@ namespace ReactSystem
             //防止重复启动
             if (coroutine != null) return;
             //如果有不需要反应物或条件的则启动反应器
-            if (force || inPorts.Count == 0)
+            if ((force || inPorts.Count == 0) && interactPool != null)
             {
                 coroutine = StartCoroutine(interactPool.LunchInteractPool());
 
@@ -126,11 +130,18 @@ namespace ReactSystem
             {
                 foreach (var item in types)
                 {
-                    if (Array.Find(import.supportTypes, x => item == x)!=null)//.Contains(item))
+                    if (Array.Find(import.supportTypes, x => item == x) != null)//.Contains(item))
                     {
                         if (import.active)
                         {
-                            interactPool.AddElements(item);
+                            if (equations.Count == 0)
+                            {
+                                OnGenerateNewItem(item);
+                            }
+                            else
+                            {
+                                interactPool.AddElements(item);
+                            }
                             onElementAppear.Invoke(item);
                         }
                         else
@@ -151,6 +162,10 @@ namespace ReactSystem
                 {
                     Debug.Log(item + "未添加匹配");
                 }
+            }
+            if(interactPool == null)
+            {
+                OnAllEquationComplete();
             }
         }
         /// <summary>
@@ -202,7 +217,7 @@ namespace ReactSystem
         /// </summary>
         private void OnAllEquationComplete()
         {
-            Debug.Log(name + ":反应结束",gameObject);
+            Debug.Log(name + ":反应结束", gameObject);
             if (onComplete != null) onComplete.Invoke(this);
         }
     }
