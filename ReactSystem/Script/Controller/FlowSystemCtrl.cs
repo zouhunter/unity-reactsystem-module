@@ -125,7 +125,7 @@ namespace ReactSystem
             }
             return list;
         }
-        private void ResatToBeginState()
+        public void ResatToBeginState()
         {
             reactTuple.Clear();
             activeItem = null;
