@@ -23,7 +23,7 @@ namespace ReactSystem
         public Func<IContainer, List<ISupporter>> GetSupportList { get; set; }
         private List<RunTimeElemet> elements;
         private IContainer activeItem;
-        private Queue<Tuple<IContainer, int, string[]>> reactTuple = new Queue<Tuple<IContainer, int, string[]>>();
+        private Queue<IContainer> reactTuple = new Queue<IContainer>();
         private bool isReact;
 
         public event UnityAction onComplete;
@@ -87,26 +87,10 @@ namespace ReactSystem
         {
             if (isReact) return;
 
-            while (reactTuple.Count > 0)
+            if (reactTuple.Count > 0)
             {
-                Tuple<IContainer, int, string[]> item = reactTuple.Dequeue();
-                activeItem = item.Element1;
-                var outInfo = GetConnectedDic(activeItem, item.Element2);
-
-                if (outInfo != null && outInfo.Count != 0)
-                {
-                    foreach (var node in outInfo)
-                    {
-                        var outInoutItem = node.Key;
-                        var outInoutId = node.Value;
-                        outInoutItem.Import(outInoutId, item.Element3);
-                    }
-                }
-                else
-                {
-                    if (onStepBreak != null) onStepBreak.Invoke(activeItem);
-                }
-
+                var container = reactTuple.Dequeue();
+                container.Active(true);
                 isReact = true;
             }
         }
@@ -143,8 +127,24 @@ namespace ReactSystem
 
         private bool OnReact(IContainer item, int id, string[] type)
         {
-            reactTuple.Enqueue(new Tuple<IContainer, int, string[]>(item, id, type));
-            var outInfo = GetConnectedDic(item, id);
+            activeItem = item;
+            var outInfo = GetConnectedDic(activeItem, id);
+
+            if (outInfo != null && outInfo.Count != 0)
+            {
+                foreach (var node in outInfo)
+                {
+                    var outInoutItem = node.Key;
+                    var outInoutId = node.Value;
+                    outInoutItem.Import(outInoutId, type);
+                    reactTuple.Enqueue(outInoutItem);
+                }
+            }
+            else
+            {
+                if (onStepBreak != null) onStepBreak.Invoke(activeItem);
+            }
+
             return outInfo != null && outInfo.Count != 0;
         }
         private void OnOneStep(IContainer item)

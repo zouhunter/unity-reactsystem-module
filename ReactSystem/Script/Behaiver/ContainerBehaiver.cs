@@ -98,19 +98,26 @@ namespace ReactSystem
             //防止重复启动
             if (coroutine != null) return;
             //如果有不需要反应物或条件的则启动反应器
-            if ((force || inPorts.Count == 0) && interactPool != null)
+            if ((force || inPorts.Count == 0) )
             {
-                coroutine = StartCoroutine(interactPool.LunchInteractPool());
-
-                var list = onGetSupports.Invoke(this);
-                if (list != null)
+                if(interactPool != null)
                 {
-                    foreach (var item in list)
+                    coroutine = StartCoroutine(interactPool.LunchInteractPool());
+
+                    var list = onGetSupports.Invoke(this);
+                    if (list != null)
                     {
-                        //添加条件
-                        Debug.Log("AddCondintion:" + item);
-                        interactPool.AddConditions(item);
+                        foreach (var item in list)
+                        {
+                            //添加条件
+                            Debug.Log("AddCondintion:" + item);
+                            interactPool.AddConditions(item);
+                        }
                     }
+                }
+                else
+                {
+                    OnAllEquationComplete();
                 }
 
             }
@@ -124,7 +131,6 @@ namespace ReactSystem
         /// <param name="onComplete"></param>
         public void Import(int nodeId, string[] types)
         {
-            Active(true);
             var import = inPorts.Find(x => x.id == nodeId);
             if (import != null)
             {
@@ -163,10 +169,7 @@ namespace ReactSystem
                     Debug.Log(item + "未添加匹配");
                 }
             }
-            if(interactPool == null)
-            {
-                OnAllEquationComplete();
-            }
+           
         }
         /// <summary>
         /// 试图将生成的元素导出
