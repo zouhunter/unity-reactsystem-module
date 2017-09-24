@@ -10,7 +10,6 @@ namespace ReactSystem
     public class ReactGroupObj : ScriptableObject
     {
         public string expName;
-        [Array]
         public List<RunTimeElemet> elements = new List<RunTimeElemet>();
     }
 }
